@@ -82,6 +82,7 @@ class Swiper {
       return swipers;
     }
 
+
     // Swiper Instance
     const swiper = this;
     swiper.__swiper__ = true;

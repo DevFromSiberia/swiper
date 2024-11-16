@@ -2,7 +2,7 @@
 import { getWindow, getDocument } from 'ssr-window';
 import { elementOffset, elementParents } from '../../shared/utils.mjs';
 
-export default function Keyboard({ swiper, extendParams, on, emit }) {
+export default function Keyboard({ swiper, params, extendParams, on, emit }) {
   const document = getDocument();
   const window = getWindow();
   swiper.keyboard = {
@@ -111,30 +111,40 @@ export default function Keyboard({ swiper, extendParams, on, emit }) {
     emit('keyPress', kc);
     return undefined;
   }
-  function enable() {
-    if (swiper.keyboard.enabled) return;
-    document.addEventListener('keydown', handle);
-    swiper.keyboard.enabled = true;
-  }
-  function disable() {
-    if (!swiper.keyboard.enabled) return;
-    document.removeEventListener('keydown', handle);
-    swiper.keyboard.enabled = false;
-  }
+
+  const eventContext = () => {
+    let evContext = document;
+    if (typeof params.el === 'object') {
+      !params.el.id && (params.el.id = Math.random());
+    }
+
+    return {
+      enable: function () {
+        if (swiper.keyboard.enabled) return;
+        evContext.addEventListener('keydown', handle);
+        swiper.keyboard.enabled = true;
+      },
+      disable: function () {
+        if (!swiper.keyboard.enabled) return;
+        evContext.removeEventListener('keydown', handle);
+        swiper.keyboard.enabled = false;
+      }
+    };
+  };
 
   on('init', () => {
     if (swiper.params.keyboard.enabled) {
-      enable();
+      eventContext().enable();
     }
   });
   on('destroy', () => {
     if (swiper.keyboard.enabled) {
-      disable();
+      eventContext().disable();
     }
   });
 
   Object.assign(swiper.keyboard, {
-    enable,
-    disable,
+    enable: eventContext().enable(),
+    disable: eventContext().disable(),
   });
 }
