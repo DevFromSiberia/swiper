@@ -74,7 +74,9 @@ class Swiper {
       document.querySelectorAll(params.el).length > 1
     ) {
       const swipers = [];
-      document.querySelectorAll(params.el).forEach((containerEl) => {
+
+      document.querySelectorAll(params.el).forEach((containerEl, index) => {
+        containerEl.id = String(index) + ' ' + containerEl.className;
         const newParams = extend({}, params, { el: containerEl });
         swipers.push(new Swiper(newParams));
       });

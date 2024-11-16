@@ -113,11 +113,7 @@ export default function Keyboard({ swiper, params, extendParams, on, emit }) {
   }
 
   const eventContext = () => {
-    let evContext = document;
-    if (typeof params.el === 'object') {
-      !params.el.id && (params.el.id = Math.random());
-    }
-
+    let evContext = document.getElementById(params.el.id) || document;
     return {
       enable: function () {
         if (swiper.keyboard.enabled) return;
